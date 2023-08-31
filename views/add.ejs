@@ -1,0 +1,40 @@
+<%- include('./partials/header') %>
+
+<h1>Add Employee</h1>
+
+<% if (typeof errors !== 'undefined' && errors.length > 0) { %>
+  <div class="alert alert-danger">
+    <ul>
+      <% errors.forEach(error => { %>
+        <li><%= error.msg %></li>
+      <% }) %>
+    </ul>
+  </div>
+<% } %>
+
+<form action="/add" method="post" enctype="multipart/form-data">
+  <div class="form-group">
+    <label for="name">Name</label>
+    <input type="text" class="form-control" id="name" name="name">
+  </div>
+  <div class="form-group">
+    <label for="contact">Contact</label>
+    <input type="text" class="form-control" id="contact" name="contact">
+  </div>
+  <div class="form-group">
+    <label for="designation">Designation</label>
+    <input type="text" class="form-control" id="designation" name="designation">
+  </div>
+  <div class="form-group">
+    <label for="district">District</label>
+    <input type="text" class="form-control" id="district" name="district">
+  </div>
+  <div class="form-group">
+    <label for="image">Image</label>
+    <input type="file" class="form-control-file" id="image" name="image">
+  </div>
+  <button type="submit" class="btn btn-primary">Add Employee</button>
+</form>
+<%- include('./partials/bootstrap') %>
+
+<%- include('./partials/footer') %>

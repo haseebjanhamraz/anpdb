@@ -1,0 +1,29 @@
+<%- include('./partials/header') %>
+
+<h1>Edit Employee</h1>
+
+<form action="/edit/<%= employee._id %>" method="post" enctype="multipart/form-data">
+  <div class="form-group">
+    <label for="name">Name</label>
+    <input type="text" class="form-control" id="name" name="name" value="<%= employee.name %>">
+  </div>
+  <div class="form-group">
+    <label for="contact">Contact</label>
+    <input type="text" class="form-control" id="contact" name="contact" value="<%= employee.contact %>">
+  </div>
+  <div class="form-group">
+    <label for="designation">Designation</label>
+    <input type="text" class="form-control" id="designation" name="designation" value="<%= employee.designation %>">
+  </div>
+  <div class="form-group">
+    <label for="district">District</label>
+    <input type="text" class="form-control" id="district" name="district" value="<%= employee.district %>">
+  </div>
+  <div class="form-group">
+    <label for="image">Image</label>
+    <input type="file" class="form-control-file" id="image" name="image">
+  </div>
+  <button type="submit" class="btn btn-primary">Update Employee</button>
+</form>
+
+<%- include('./partials/footer') %>
