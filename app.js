@@ -20,7 +20,6 @@ mongoose.connect('mongodb://localhost:27017/employeeDB', { useNewUrlParser: true
 
 const employeeSchema = new mongoose.Schema({
   name: String,
-  contact: String,
   designation: String,
   district: String,
   image: String,
@@ -49,23 +48,31 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 passport.use(new LocalStrategy((username, password, done) => {
-    User.findOne({ username: username }, (err, user) => {
-      if (err) return done(err);
-      if (!user) return done(null, false, { message: 'Incorrect username.' });
-      if (user.password !== password) return done(null, false, { message: 'Incorrect password.' });
-      return done(null, user);
-    });
+    User.findOne({ username: username })
+  .then(user => {
+    if (!user) return done(null, false, { message: 'Incorrect username.' });
+    if (user.password !== password) return done(null, false, { message: 'Incorrect password.' });
+    return done(null, user);
+  })
+  .catch(err => {
+    return done(err);
+  });
+
   }));
   
   passport.serializeUser((user, done) => {
     done(null, user.id);
   });
   
-  passport.deserializeUser((id, done) => {
-    User.findById(id, (err, user) => {
-      done(err, user);
-    });
+  passport.deserializeUser(async (id, done) => {
+    try {
+      const user = await User.findById(id);
+      done(null, user);
+    } catch (err) {
+      done(err);
+    }
   });
+  
 
   // Middleware for checking if a user is authenticated
 const isAuthenticated = (req, res, next) => {
@@ -140,7 +147,6 @@ app.post(
   upload.single('image'),
   [
     check('name').notEmpty().withMessage('Name is required'),
-    check('contact').notEmpty().withMessage('Name is required'),
     check('designation').notEmpty().withMessage('Designation is required'),
     check('district').notEmpty().withMessage('District is required')
   ],
@@ -150,15 +156,28 @@ app.post(
       return res.render('add', { errors: errors.array() });
     }
 
-    const { name, contact, designation, district } = req.body;
+    const { name, designation, district } = req.body;
     const image = req.file.filename;
 
-    const employee = new Employee({ name, contact, designation, district, image, active: true });
+    const employee = new Employee({ name, designation, district, image, active: true });
     await employee.save();
 
     res.redirect('/');
   }
 );
+app.post('/edit/:id', upload.single('image'), async (req, res) => {
+    const { name, designation, district } = req.body;
+    const image = req.file ? req.file.filename : req.body.image;
+  
+    try {
+      await Employee.findByIdAndUpdate(req.params.id, { name, designation, district, image });
+      res.redirect('/');
+    } catch (err) {
+      console.error(err);
+      res.redirect('/edit/' + req.params.id); // Redirect back to the edit page with an error message
+    }
+  });
+  
 
 app.listen(3000, () => {
   console.log('Server is running on port 3000');

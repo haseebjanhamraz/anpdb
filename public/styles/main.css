@@ -2,3 +2,14 @@
     width: 100px;
     height: 100px;
 }
+.navbar{
+    background-color: red;
+}
+
+.nav-link {
+    gap: 10px;
+    background-color: white;
+    padding: 10px;
+    border-radius: 5px;
+    color: black;
+}
