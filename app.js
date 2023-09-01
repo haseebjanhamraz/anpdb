@@ -74,16 +74,19 @@ passport.use(new LocalStrategy((username, password, done) => {
   });
   
 
-  // Middleware for checking if a user is authenticated
+// Middleware for checking if a user is authenticated
 const isAuthenticated = (req, res, next) => {
-    if (req.isAuthenticated()) {
-      return next();
-    }
-    res.redirect('/login');
-  };
-
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.redirect('/login');
+};
 
 // Routes
+app.get('/', async (req, res) => {
+  const employees = await Employee.find();
+  res.render('index', { employees, isAuthenticated: req.isAuthenticated() });
+});
 app.get('/register', (req, res) => {
     res.render('register'); // Create a register.ejs view
   });
@@ -109,18 +112,6 @@ app.get('/register', (req, res) => {
     passport.authenticate('local', { successRedirect: '/', failureRedirect: '/login' })
   );
   
-  app.get('/logout', (req, res) => {
-    req.logout();
-    res.redirect('/login');
-  });
-
-  
-
-
-  app.get('/', async (req, res) => {
-    const employees = await Employee.find();
-    res.render('index', { employees });
-  });
   
   app.get('/add', isAuthenticated, (req, res) => {
     res.render('add');
@@ -177,7 +168,14 @@ app.post('/edit/:id', upload.single('image'), async (req, res) => {
       res.redirect('/edit/' + req.params.id); // Redirect back to the edit page with an error message
     }
   });
-  
+
+// Define the logout route
+app.get('/logout', (req, res) => {
+  req.logout(() => {
+    res.redirect('/'); // Redirect to the home page
+  });
+});
+
 
 app.listen(3000, () => {
   console.log('Server is running on port 3000');
