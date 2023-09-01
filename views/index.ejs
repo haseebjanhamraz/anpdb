@@ -1,14 +1,18 @@
 <%- include('./partials/header') %>
 <h1>ANP Official Cabinet List</h1>
+<input type="text" id="searchInput" placeholder="Search...">
 
 <table class="table table-striped">
   <thead>
     <tr>
-        <th>Image</th>
+      <th>Image</th>
       <th>Name</th>
-      <th>Contact Info</th>
       <th>Designation</th>
+      <th>Cabinet Type</th>
+      <th>Province</th>
       <th>District</th>
+      <th>Contact</th>
+      <th>Email</th>
       <% if (isAuthenticated) { %>
       <th>Actions</th>
       <% } %>
@@ -19,9 +23,12 @@
       <tr>
         <td><img src="/images/<%= employee.image %>" alt="Employee Image" class="employee-image"></td>
         <td><%= employee.name %></td>
-        <td><%= employee.contact %></td>
         <td><%= employee.designation %></td>
+        <td><%= employee.cabType %></td>
+        <td><%= employee.province %></td>
         <td><%= employee.district %></td>
+        <td><%= employee.contact %></td>
+        <td><%= employee.email %></td>
         <% if (isAuthenticated) { %>
         <td>
           <a href="/edit/<%= employee._id %>" class="btn btn-primary btn-sm">Edit</a>
@@ -32,5 +39,5 @@
     <% }) %>
   </tbody>
 </table>
-
+<script src="/js/search.js"></script>
 <%- include('./partials/footer') %>

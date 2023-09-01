@@ -1,36 +1,94 @@
 <%- include('./partials/header') %>
 
-<h1>Add Employee</h1>
+  <h1>Add Member</h1>
 
-<% if (typeof errors !== 'undefined' && errors.length > 0) { %>
-  <div class="alert alert-danger">
-    <ul>
-      <% errors.forEach(error => { %>
-        <li><%= error.msg %></li>
-      <% }) %>
-    </ul>
-  </div>
-<% } %>
+  <% if (typeof errors !=='undefined' && errors.length> 0) { %>
+    <div class="alert alert-danger">
+      <ul>
+        <% errors.forEach(error=> { %>
+          <li>
+            <%= error.msg %>
+          </li>
+          <% }) %>
+      </ul>
+    </div>
+    <% } %>
 
-<form action="/add" method="post" enctype="multipart/form-data">
-  <div class="form-group">
-    <label for="name">Name</label>
-    <input type="text" class="form-control" id="name" name="name">
-  </div>
-  <div class="form-group">
+      <form action="/add" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+          <label for="name">Name</label>
+          <input type="text" class="form-control" id="name" name="name">
+        </div>
+        <div class="form-group">
+          <label for="contact">Contact Number:</label>
+          <input type="text" class="form-control" id="contact" name="contact" required>
+        </div>
+        <div class="form-group">
+          <label for="email">Email Address:</label>
+          <input type="email" class="form-control" id="email" name="email" required>
+        </div>
+        <!-- <div class="form-group">
     <label for="designation">Designation</label>
     <input type="text" class="form-control" id="designation" name="designation">
-  </div>
-  <div class="form-group">
-    <label for="district">District</label>
-    <input type="text" class="form-control" id="district" name="district">
-  </div>
-  <div class="form-group">
-    <label for="image">Image</label>
-    <input type="file" class="form-control-file" id="image" name="image">
-  </div>
-  <button type="submit" class="btn btn-primary">Add Employee</button>
-</form>
-<%- include('./partials/bootstrap') %>
+  </div> -->
 
-<%- include('./partials/footer') %>
+        <!-- Designations -->
+
+        <% const designations=["President", "Vice President" , "Senior Vice President" , "Vice President 1"
+          , "Vice President 2" , "General Secretary" , "Additional General Secretary" , "Deputy General Secretary"
+          , "Information Secretary" , "Finance Secretary" , "Culture Secretary" , "Secretary Youth Affairs"
+          , "Secretary Social Media" , "Salaar" , "Vice Salaar" , "Deputy Salaar" ] ;%>
+          <!-- Cabinet Type -->
+          <% const cabType=["Central", "Provincial" ];%>
+          <!-- Provinces -->
+          <% const province = ["Khyber Pakhtunkhwa", "Sindh", "Balochistan", "Punjab", "Siraiki Belt" ]; %>
+
+
+            <div class="form-group">
+              <label for="designation">Designation:</label>
+              <select class="form-control" id="designation" name="designation" required>
+                <% designations.forEach(function(designation) { %>
+                  <option value="<%= designation %>">
+                    <%= designation %>
+                  </option>
+                  <% }); %>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="cabType">Cabinet Type:</label>
+              <select class="form-control" id="cabType" name="cabType" required>
+                <% cabType.forEach(function(cabType) { %>
+                  <option value="<%= cabType %>">
+                    <%= cabType %>
+                  </option>
+                  <% }); %>
+              </select>
+            </div>
+
+
+            <div class="form-group">
+              <label for="district">District</label>
+              <input type="text" class="form-control" id="district" name="district">
+            </div>
+
+            <div class="form-group">
+              <label for="province">Province:</label>
+              <select class="form-control" id="province" name="province" required>
+                <% province.forEach(function(province) { %>
+                  <option value="<%= province %>">
+                    <%= province %>
+                  </option>
+                  <% }); %>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="image">Image</label>
+              <input type="file" class="form-control-file" id="image" name="image">
+            </div>
+            <button type="submit" class="btn btn-primary">Add Employee</button>
+      </form>
+      <%- include('./partials/bootstrap') %>
+
+        <%- include('./partials/footer') %>

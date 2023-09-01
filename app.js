@@ -10,8 +10,6 @@ const session = require('express-session');
 const User = require('./models/user')
 
 
-  
-
 
 const app = express();
 
@@ -20,13 +18,18 @@ mongoose.connect('mongodb://localhost:27017/employeeDB', { useNewUrlParser: true
 
 const employeeSchema = new mongoose.Schema({
   name: String,
+  contact: String,
+  email: String,
   designation: String,
+  cabType: String,
+  province: String,
   district: String,
   image: String,
   active: Boolean
 });
 
 const Employee = mongoose.model('Employee', employeeSchema);
+
 
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -105,27 +108,27 @@ app.get('/register', (req, res) => {
   });
   
   app.get('/login', (req, res) => {
-    res.render('login'); // Create a login.ejs view
+    res.render('login', { isAuthenticated: req.isAuthenticated() }); // Pass isAuthenticated to the login view
   });
+  
   
   app.post('/login',
     passport.authenticate('local', { successRedirect: '/', failureRedirect: '/login' })
   );
   
-  
+
   app.get('/add', isAuthenticated, (req, res) => {
-    res.render('add');
+    res.render('add', { isAuthenticated: req.isAuthenticated()}); 
+    
   });
+  // Read the JSON file
   
   app.get('/edit/:id', isAuthenticated, async (req, res) => {
     const employee = await Employee.findById(req.params.id);
-    res.render('edit', { employee });
+    const isAuthenticated = req.isAuthenticated(); // Move this line here
+    res.render('edit', { employee, isAuthenticated }); // Pass isAuthenticated to the view
   });
   
-  app.get('/disable/:id', isAuthenticated, async (req, res) => {
-    await Employee.findByIdAndUpdate(req.params.id, { active: false });
-    res.redirect('/');
-  });
   
   app.get('/delete/:id', isAuthenticated, async (req, res) => {
     await Employee.findByIdAndDelete(req.params.id);
@@ -133,35 +136,41 @@ app.get('/register', (req, res) => {
   });
       
 
-app.post(
-  '/add',
-  upload.single('image'),
-  [
-    check('name').notEmpty().withMessage('Name is required'),
-    check('designation').notEmpty().withMessage('Designation is required'),
-    check('district').notEmpty().withMessage('District is required')
-  ],
-  async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.render('add', { errors: errors.array() });
+  app.post(
+    
+    '/add',
+    upload.single('image'),
+    [
+      check('name').notEmpty().withMessage('Name is required'),
+      check('designation').notEmpty().withMessage('Designation is required'),
+      check('cabType').notEmpty().withMessage('Cabinet is required'),
+      check('district').notEmpty().withMessage('District is required'),
+      check('province').notEmpty().withMessage('Province is required'),
+      check('contact').notEmpty().withMessage('Contact number is required'),
+      check('email').isEmail().withMessage('Invalid email address'),
+    ],
+    async (req, res) => {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.render('add', { errors: errors.array() });
+      }
+  
+      const { name, designation, cabType, district, province, contact, email } = req.body;
+      const image = req.file.filename;
+  
+      const employee = new Employee({ name, designation, cabType, district, province, contact, email, image, active: true }); // Include contact field
+      await employee.save();
+  
+      res.redirect('/');
     }
-
-    const { name, designation, district } = req.body;
-    const image = req.file.filename;
-
-    const employee = new Employee({ name, designation, district, image, active: true });
-    await employee.save();
-
-    res.redirect('/');
-  }
-);
+  );
+  
 app.post('/edit/:id', upload.single('image'), async (req, res) => {
-    const { name, designation, district } = req.body;
+    const { name, designation, district, contact, email } = req.body;
     const image = req.file ? req.file.filename : req.body.image;
   
     try {
-      await Employee.findByIdAndUpdate(req.params.id, { name, designation, district, image });
+      await Employee.findByIdAndUpdate(req.params.id, { name, designation, district, contact, email, image });
       res.redirect('/');
     } catch (err) {
       console.error(err);
