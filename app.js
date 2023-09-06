@@ -14,7 +14,7 @@ const User = require('./models/user')
 const app = express();
 
 // MongoDB connection
-mongoose.connect('mongodb://localhost:27017/employeeDB', { useNewUrlParser: true, useUnifiedTopology: true });
+const connection = mongoose.connect('mongodb://localhost:27017/employeeDB', { useNewUrlParser: true, useUnifiedTopology: true });
 
 const employeeSchema = new mongoose.Schema({
   name: String,
@@ -90,6 +90,18 @@ app.get('/', async (req, res) => {
   const employees = await Employee.find();
   res.render('index', { employees, isAuthenticated: req.isAuthenticated() });
 });
+
+
+app.get('/dashboard', isAuthenticated, async (req, res) =>{
+  async function fetchEmployeeData() {
+    const designation = client.db().collection('employees');
+    const employees = await collection.find({}).toArray();
+    return employees;
+  }
+  
+  res.render('dashboard', { isAuthenticated: req.isAuthenticated()});
+})
+
 app.get('/register', (req, res) => {
     res.render('register'); // Create a register.ejs view
   });
